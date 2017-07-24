@@ -1,0 +1,157 @@
+\section{Kylo and DNA}
+	\subsection{Statement}
+		Given a string $S$ over the alphabet
+		$\{\,\ttt{A}, \ttt{G}, \ttt{C}, \ttt{T}\,\}$ and another string
+		$T$ over $\{\,\ttt{A}, \ttt{G}, \ttt{C}, \ttt{T}, \ttt{.}\,\}$
+		find all the indices of $S$ such that $T$ matches the substring
+		of $S$ starting at that index.
+
+		The character \ttt{.} matches every character in the alphabet of $S$.
+
+	\subsection{A simpler version}
+		Let's remove the \ttt{.} from the alphabet of $T$.
+		Then we have the classic string matching problem.
+
+		Of course, there are some very well known algorithms for this (easy), but it
+		is not easy to extend them to the original problem, so we solve this variant
+		using a technique that is harder, but generalises easily to the problem we
+		wish to solve.
+
+		For convenience, we assume that both $S$ and $T$ are \ttt{0-indexed}, and define
+		$A = \{\,\ttt{A}, \ttt{G}, \ttt{C}, \ttt{T}\,\}$.
+
+		Define $\ttt{match}(c, i)$ as $\card{\{\, j\mid T_j = S_{i + j}, T_j = c\,\}}$.
+
+		\begin{claim}
+		$T$ matches $S_{i\dots i + \card{T} - 1} \iff \sum_{c \in A} \ttt{match}(c, i) = \card{T}$.
+		\end{claim}
+
+		\begin{proof}
+		Left as an exercise $\ddot\smallsmile$.
+		\end{proof}
+
+		Now, of course, we need to find $\ttt{match}(c, i) \forall c\in A,
+		\forall i, 0 \leq i < N$.
+
+		Let's concentrate on a single $c \in A$.
+
+		Denote by $f(S, c)$ the polynomial
+		$\sum_{i = 0}^{\card{S} - 1} \left[S_i = c\right] x^i$.
+		(the coefficient of $x_i$ is $1 \iff S_i = c$).
+
+		What happens if we take the product $f(S, c) \times f(T, c)$?
+		We get the polynomial
+		\begin{align*}
+			f(S, c) \times f(T, c) &=
+			\sum_{i = 0}^{\card{S} + \card{T} - 2} \left(\sum_{j = 0}^{\min(i, \card{T} - 1)}
+			\left[S_{i - j} = c\right]\left[T_{j} = c\right] x^i\right)\\
+		\end{align*}
+
+		Now, we seem to be matching the reverse of $T$ with $S$ in some fashion, so
+		let's try reversing one (I choose $T$, let's call the reverse $S'$), and then
+		computing the product $f(S', c) \times f(T, c)$.
+		We get the polynomial
+
+		\begin{align*}
+			f(S', c) \times f(T, c) &= 
+			\sum_{i = 0}^{\card{S'} + \card{T} - 2} \left(\sum_{j = 0}^{\min(i, \card{T} - 1)}
+			\left[{S'}_{i - j} = c\right]\left[T_{j} = c\right] x^i\right)\\
+			&= \sum_{i = 0}^{\card{S'} + \card{T} - 2} \left(\sum_{j = 0}^{\min(i, \card{T} - 1)}
+			\left[{S}_{\card{S} - 1 - i + j} = c\right]\left[T_{j} = c\right] x^i \right)\\
+		\end{align*}
+
+		\begin{claim}
+			$\ttt{match}(c, i) = \left[x^{\card{S} - i - 1}\right] f(S', c)\times f(T, c)$
+			(that is, the coefficient of $x^{\card{S} - i - 1}$ in $f(S', c) \times f(T, c)$.
+		\end{claim}
+
+		\begin{proof}
+			Left as an exercise.
+		\end{proof}
+
+		We can compute the polynomials we want in linear time, and the product in
+		$\bigO{(\card{S} + \card{T}) \log (\card{S} + \card{T})}$ time.
+		This is also multiplied by a factor of $\card{A}$, because we do this once
+		for each letter of the alphabet.
+
+	\subsection{Extending solution to original problem}
+		The only change we make is to define $f(S, c) = 
+		\sum_{i = 0}^{\card{S} - 1} \left[S_i = \ttt{.} \vee S_i = c\right] x^i$.
+		(the coefficient of $x_i$ is $1 \iff S_i = \ttt{.} \vee S_i = c$).
+
+		You should try to work out the details and see that solution still works.
+
+	\subsection{A faster, more general solution}
+		Are you annoyed by that pesky $\card{A}$ factor in the solution?
+		Then this is the subsection for you!
+
+		Replace each letter of your alphabet $A$ by the numbers $1, \dots , \card{A}$,
+
+		\begin{claim}
+			$S_{i\dots i + \card{T} - 1}$ and $T$ match $\iff
+			\sum_{j = 0}^{\card{T} - 1} \left(S_{i + j} - T_{j}\right) ^ 2 = 0$.
+		\end{claim}
+
+		\begin{proof}
+			Trivial.
+		\end{proof}
+
+		Now, we open up the summand to get
+		\begin{align*}
+			S_{i\dots i + \card{T} - 1} \text{ and } T \ttt{ match }
+			&\iff
+			\sum_{j = 0}^{\card{T} - 1} \left(S_{i + j} - T_{j}\right) ^ 2 = 0 \\
+			&\iff
+			\sum_{j = 0}^{\card{T} - 1} S_{i + j}^2 + T_{j}^2 - 2S_{i + j}T_j = 0\\
+			&\iff
+			\sum_{j = 0}^{\card{T} - 1} S_{i +j}^2 + 
+			\sum_{j = 0}^{\card{T} - 1} T_j^2 -
+			2\sum_{j = 0}^{\card{T} - 1} S_{i + j}T_j = 0\\
+		\end{align*}
+
+		Now, the first summation is just a range-sum query over the array
+		$X$, where $X_i = \left(S_i\right)^2$ (you can do in O(1) using prefix sums),
+		and the second summation is a prefix of a similar array for $T$, so also O(1).
+
+		The last summation, is actually a form exactly similar to $\ttt{match}(c, i)$,
+		and can, in fact, be represented as a convolution of $S'$ and $T$.
+
+		How do we extend this to where $T$ can have \ttt{.}s?
+		Simple, we give \ttt{.} the number $0$, and everything else same as before,
+		we now check whether 
+		$\sum_{j = 0}^{\card{T} - 1} \left(S_{i + j} - T_{j}\right)T_j ^ 2 = 0$.
+
+		The effect of multiplying with $T_j$ is that the term gets eliminated straight
+		away if $T_j = 0$, and otherwise stays non-zero / zero depending on the term
+		inside the square, which is as desired.
+
+		This approach is more general, because what if $S$ had dots too?
+		Simple, we check whether
+		$\sum_{j = 0}^{\card{T} - 1} \left(S_{i + j} - T_{j}\right)T_jS_{i + j} ^ 2 = 0$.
+
+		Of course, after opening the square in either case above, you will get something you
+		can convert to a convolution, but I leave that as exercise.
+
+		(I learned this trick from a lecture by
+		\href{http://codeforces.com/profile/kevinsogo}{Kevin Charles Atienza})
+
+	\subsection{A note on implementation}
+		During the contest, I saw that a participant submitted a recursive FFT implementation.
+		It did not pass the 10 second TL, while my testing solution (which used an iterative FFT)
+		ran in 3 seconds.
+
+		The recursive solution (which was otherwise correct) actually took 17 seconds to pass the
+		largest tests. While I will keep this in mind for any subsequent FFT problems I make
+		(and test with recursive solution myself), you will often find that some contest does not
+		allow recursive FFT to pass.
+
+		I highly recommend that you go through the section on iterative FFT in CLRS, and then implement
+		your own (\href{https://github.com/parthmittal/codebook/blob/master/fastfft.cpp}{here}) is mine
+		for reference).
+
+		Also \href{https://pastebin.com/Jf7H8Prp}{here} is a link to my full solution, as an optimisation challenge,
+		can you reduce its runtime by a factor of $4$ (max-test is
+		\href{https://drive.google.com/file/d/0B-W-TWxgtybGQzhvR0hGZUM2MU0/view?usp=sharing}{here}).
+		(technically you should be able to reduce it by a factor of around 8x, by using the previous section's observations too.)
+		Some ideas: replace \verb|std::complex| by a hand-rolled complex numbers class, and note that the transform
+		steps are expensive, so maybe you want to minimise the number of those?

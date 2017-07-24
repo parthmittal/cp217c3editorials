@@ -1,0 +1,48 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+\newcommand{\MYhref}[3][blue]{\href{#2}{\color{#1}{#3}}}%
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{marginnote}
+\usepackage{tikz} \usepackage{parskip}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsthm}
+
+\title{Reading Material Contest 3 Analysis}
+\author{Parth Mittal, Mohit Wadhwa, Sattu Supari}
+\theoremstyle{definition}
+\newtheorem*{claim}{Claim}
+
+\setcounter{secnumdepth}{1}
+\reversemarginpar
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\card{\mid}{\mid}
+\newcommand{\ttt}[1]{\texttt{#1}}
+\newcommand{\bigO}[1]{O\left({#1}\right)}
+
+% Better table padding
+\renewcommand{\arraystretch}{1.5}
+
+\begin{document}
+
+	\maketitle
+	\tableofcontents
+
+	\input{kylo}
+
+\end{document}
