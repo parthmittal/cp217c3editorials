@@ -37,7 +37,7 @@
 
 		Denote by $f(S, c)$ the polynomial
 		$\sum_{i = 0}^{\card{S} - 1} \left[S_i = c\right] x^i$.
-		(the coefficient of $x_i$ is $1 \iff S_i = c$).
+		(the coefficient of $x^i$ is $1 \iff S_i = c$).
 
 		What happens if we take the product $f(S, c) \times f(T, c)$?
 		We get the polynomial
@@ -151,7 +151,7 @@
 
 		Also \href{https://pastebin.com/Jf7H8Prp}{here} is a link to my full solution; as an optimisation challenge,
 		can you reduce its runtime by a factor of $4$ (max-test is
-		\href{https://drive.google.com/file/d/0B-W-TWxgtybGQzhvR0hGZUM2MU0/view?usp=sharing}{here}).
+		\href{https://drive.google.com/file/d/0B-W-TWxgtybGQzhvR0hGZUM2MU0/view?usp=sharing}{here})?
 		(technically you should be able to reduce it by a factor of around 8x, by using the previous section's observations too)
 
 		Some ideas: replace \verb|std::complex| by a hand-rolled complex numbers class, and note that the transform
